@@ -51,7 +51,7 @@
             <div class="card-body">
 
                 <!-- HEADER -->
-                <h5 class="text-success mb-4">Smart Home System Login</h5>
+                <h5 class="text-success mb-4">DCIT Smart Energy Login</h5>
 
                 <!-- LOGIN FORM -->
                 <form action="<?= base_url('auth/login') ?>" method="post">

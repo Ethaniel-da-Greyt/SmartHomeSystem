@@ -5,35 +5,16 @@ Maintenance Monitoring
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
+<?= $this->section('navbar') ?> Maintenance Monitoring <?= $this->endSection() ?>
 
 <div class="container-fluid">
 
-    <!-- ================= HEADER CARD ================= -->
-    <div class="row mb-4">
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm text-white bg-primary">
-                <div class="card-body">
-                    <h5 class="card-title">Total Devices</h5>
-                    <h3 class="fw-bold"><?= $totalDevices ?? 0 ?></h3>
-                </div>
-            </div>
-        </div>
+    <!-- ================= HEADER CARDS ================= -->
 
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm text-white bg-success">
-                <div class="card-body">
-                    <h5 class="card-title">Devices Active</h5>
-                    <h3 class="fw-bold"><?= $activeDevices ?? 0 ?></h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm text-white bg-danger">
-                <div class="card-body">
-                    <h5 class="card-title">Devices Under Maintenance</h5>
-                    <h3 class="fw-bold"><?= $maintenanceDevices ?? 0 ?></h3>
-                </div>
+    <div class="col-12 col-md-6 col-lg-4 mb-4 w-100">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Maintenance Monitoring</h5>
             </div>
         </div>
     </div>
@@ -45,46 +26,25 @@ Maintenance Monitoring
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-dark">
+                <table class="table table-bordered table-hover mb-0">
+                    <thead class="table">
                         <tr>
                             <th>#</th>
-                            <th>Device Name</th>
-                            <th>Status</th>
-                            <th>Last Checked</th>
+                            <th>Device ID</th>
                             <th>Remarks</th>
+                            <th>Date Reported</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($devices)) : ?>
-                            <?php foreach ($devices as $index => $device) : ?>
-                                <tr>
-                                    <td><?= $index + 1 ?></td>
-                                    <td><?= $device['name'] ?></td>
-                                    <td>
-                                        <?php if ($device['status'] == 'Active'): ?>
-                                            <span class="badge bg-success">Active</span>
-                                        <?php elseif ($device['status'] == 'Maintenance'): ?>
-                                            <span class="badge bg-warning text-dark">Maintenance</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-secondary">Inactive</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?= date('M d, Y', strtotime($device['last_checked'])) ?></td>
-                                    <td><?= $device['remarks'] ?? '-' ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
+                        <?php foreach ($faults as $f): ?>
                             <tr>
-                                <td colspan="5" class="text-center">No devices found.</td>
+                                <td><?= esc($f['device_id']) ?></td>
+                                <td><?= esc($f['fault_message']) ?></td>
+                                <td><?= esc($f['created_at']) ?></td>
                             </tr>
-                        <?php endif; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
 
-</div>
-
-<?= $this->endSection() ?>
+            <?= $this->endSection() ?>

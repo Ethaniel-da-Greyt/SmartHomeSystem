@@ -98,9 +98,9 @@
                     <a href="<?= base_url('remote-control') ?>" class="nav-link text-white"><i
                             class="bi bi-toggle-on"></i> Remote Control</a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a href="#" class="nav-link text-white"><i class="bi bi-gear"></i> Settings</a>
-                </li>
+                </li> -->
             </ul>
         </nav>
 
@@ -113,7 +113,7 @@
             <!-- NAVBAR -->
             <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm px-3">
                 <button id="toggleSidebar" class="btn btn-outline-secondary me-2"><i class="bi bi-list"></i></button>
-                <span class="navbar-brand fw-bold">Dashboard</span>
+                <span class="navbar-brand fw-bold"><?= $this->renderSection('navbar') ?></span>
                 <div class="ms-auto">
                     <a href="/auth/logout" class="btn btn-outline-danger btn-sm">Logout</a>
                 </div>

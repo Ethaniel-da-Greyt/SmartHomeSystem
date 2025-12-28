@@ -11,17 +11,11 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('/smarthome', 'SmartHome::index');           // Web UI
     $routes->get('/smarthome/setPower/(:num)', 'SmartHome::setPower/$1'); // Turn ON/OFF
 
-    $routes->get('/dashboard', function () {
-        return view('pages/dashboard');
-    });
+    $routes->get('/dashboard', 'Home::dashboard');
 
-    $routes->get('/maintenance', function () {
-        return view('pages/maintenance');
-    });
+    $routes->get('/maintenance', 'MaintenanceController::maintenance');
 
-    $routes->get('/remote-control', function () {
-        return view('pages/remote-control');
-    });
+    $routes->get('/remote-control', 'Home::remote_control');
 
     $routes->get('/auth/logout', 'AuthController::logout');
 
@@ -36,3 +30,21 @@ $routes->group('', ['filter' => 'guest'], function ($routes) {
     $routes->post('/auth/signup', 'AuthController::signUp');
     $routes->post('/auth/login', 'AuthController::login');
 });
+
+
+// Smarthome API
+// $routes->group('smarthome/api', function ($routes) {
+//     $routes->get('device/state/(:any)', 'DeviceController::api_device_state/$1'); // GET device status
+//     $routes->post('device/toggle', 'DeviceController::api_device_toggle');       // POST toggle state
+// });
+
+$routes->group('smarthome/api', function ($routes) {
+    $routes->post('kwh', 'Smarthome::api_kwh');                     // ESP sends kWh
+    $routes->get('device/state/(:any)', 'DeviceController::api_device_state/$1');
+    $routes->post('device/toggle', 'DeviceController::api_device_toggle');
+    $routes->post('api/faults', 'FaultController::api_store');
+    $routes->get('faults', 'FaultController::index');
+});
+
+
+

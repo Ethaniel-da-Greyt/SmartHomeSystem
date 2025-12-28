@@ -51,8 +51,8 @@
             <div class="card-body">
 
                 <!-- HEADER -->
-                <h5 class="text-success mb-4">Smart Home System Login</h5>
-
+                <h5 class="text-success mb-4">DCIT Smart Energy</h5>
+                <h3 class="text-primary fw-bold text-center">Signup</h3>
                 <!-- LOGIN FORM -->
                 
                 <?php if (session()->getFlashdata('error')): ?>
