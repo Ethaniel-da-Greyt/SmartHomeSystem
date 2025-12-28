@@ -21,7 +21,7 @@ CI_ENVIRONMENT = development
 # APP
 #--------------------------------------------------------------------
 
-# app.baseURL = 'http://10.201.136.125:8000'
+app.baseURL = 'http://192.168.1.12:8000'
 # If you have trouble with `.`, you could also use `_`.
 # app_baseURL = ''
 # app.forceGlobalSecureRequests = false
