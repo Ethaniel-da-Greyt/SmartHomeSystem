@@ -13,73 +13,136 @@ class Home extends BaseController
     }
 
 
+    // public function dashboard()
+    // {
+    //     try {
+    //         $model = new KilowattsReaderModel();
+
+    //         $currentMonth = date('m');
+    //         $currentYear = date('Y');
+
+    //         // Fetch all kWh readings for the current month, grouped by day
+    //         $builder = $model->builder();
+    //         $query = $builder
+    //             ->select('DATE(date_created) as date, SUM(kilowatts) as total_kwh')
+    //             ->where('MONTH(date_created)', $currentMonth)
+    //             ->where('YEAR(date_created)', $currentYear)
+    //             ->groupBy('DATE(date_created)')
+    //             ->orderBy('DATE(date_created)', 'ASC')
+    //             ->get();
+
+    //         $results = $query->getResultArray();
+
+    //         // Initialize array with 0 for each day of the month
+    //         $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
+    //         $monthlyKwh = [];
+    //         $labels = [];
+
+    //         for ($i = 1; $i <= $daysInMonth; $i++) {
+    //             $dateStr = date('Y-m-d', strtotime("$currentYear-$currentMonth-$i"));
+    //             $labels[] = date('M d, Y', strtotime($dateStr)); // e.g., "Dec 27, 2025"
+    //             $monthlyKwh[$dateStr] = 0;
+    //         }
+
+    //         // Fill actual data
+    //         foreach ($results as $row) {
+    //             $date = $row['date'];
+    //             if (isset($monthlyKwh[$date])) {
+    //                 $monthlyKwh[$date] = floatval($row['total_kwh']);
+    //             }
+    //         }
+
+    //         // Summary metrics
+    //         $totalKwh = array_sum($monthlyKwh);
+    //         $avgDaily = $daysInMonth ? ($totalKwh / $daysInMonth) : 0;
+    //         $ratePerKwh = 12; // Example rate
+    //         $estimatedCost = $totalKwh * $ratePerKwh;
+
+    //         // Prepare data array for view
+    //         $data = [
+    //             'monthlyKwh' => array_values($monthlyKwh), // just values for chart.js
+    //             'labels' => $labels,
+    //             'totalKwh' => $totalKwh,
+    //             'avgDaily' => $avgDaily,
+    //             'estimatedCost' => $estimatedCost
+    //         ];
+
+    //         return view('pages/dashboard', $data);
+
+    //     } catch (\Throwable $th) {
+    //         log_message('error', $th->getMessage());
+    //         return view('pages/dashboard', [
+    //             'monthlyKwh' => [],
+    //             'labels' => [],
+    //             'totalKwh' => 0,
+    //             'avgDaily' => 0,
+    //             'estimatedCost' => 0
+    //         ]);
+    //     }
+    // }
+
     public function dashboard()
     {
         try {
             $model = new KilowattsReaderModel();
 
-            $currentMonth = date('m');
-            $currentYear = date('Y');
+            // GET selected month/year or fallback to current
+            $selectedMonth = $this->request->getGet('month') ?? date('m');
+            $selectedYear = $this->request->getGet('year') ?? date('Y');
 
-            // Fetch all kWh readings for the current month, grouped by day
-            $builder = $model->builder();
-            $query = $builder
-                ->select('DATE(date_created) as date, SUM(kilowatts) as total_kwh')
-                ->where('MONTH(date_created)', $currentMonth)
-                ->where('YEAR(date_created)', $currentYear)
+            // Fetch kWh grouped per day
+            $results = $model->select('DATE(date_created) as date, SUM(kilowatts) as total_kwh')
+                ->where('MONTH(date_created)', $selectedMonth)
+                ->where('YEAR(date_created)', $selectedYear)
                 ->groupBy('DATE(date_created)')
                 ->orderBy('DATE(date_created)', 'ASC')
-                ->get();
+                ->findAll();
 
-            $results = $query->getResultArray();
+            
+            // Days in selected month
+            $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $selectedMonth, $selectedYear);
 
-            // Initialize array with 0 for each day of the month
-            $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
             $monthlyKwh = [];
             $labels = [];
 
-            for ($i = 1; $i <= $daysInMonth; $i++) {
-                $dateStr = date('Y-m-d', strtotime("$currentYear-$currentMonth-$i"));
-                $labels[] = date('M d, Y', strtotime($dateStr)); // e.g., "Dec 27, 2025"
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $dateStr = sprintf('%04d-%02d-%02d', $selectedYear, $selectedMonth, $day);
                 $monthlyKwh[$dateStr] = 0;
+                $labels[] = date('M d, Y', strtotime($dateStr));
             }
 
-            // Fill actual data
             foreach ($results as $row) {
-                $date = $row['date'];
-                if (isset($monthlyKwh[$date])) {
-                    $monthlyKwh[$date] = floatval($row['total_kwh']);
+                if (isset($monthlyKwh[$row['date']])) {
+                    $monthlyKwh[$row['date']] = (float) $row['total_kwh'];
                 }
             }
 
-            // Summary metrics
             $totalKwh = array_sum($monthlyKwh);
-            $avgDaily = $daysInMonth ? ($totalKwh / $daysInMonth) : 0;
-            $ratePerKwh = 12; // Example rate
-            $estimatedCost = $totalKwh * $ratePerKwh;
+            $avgDaily = $daysInMonth ? $totalKwh / $daysInMonth : 0;
 
-            // Prepare data array for view
-            $data = [
-                'monthlyKwh' => array_values($monthlyKwh), // just values for chart.js
+            return view('pages/dashboard', [
+                'monthlyKwh' => array_values($monthlyKwh),
                 'labels' => $labels,
                 'totalKwh' => $totalKwh,
                 'avgDaily' => $avgDaily,
-                'estimatedCost' => $estimatedCost
-            ];
-
-            return view('pages/dashboard', $data);
+                'selectedMonth' => (int) $selectedMonth,
+                'selectedYear' => (int) $selectedYear
+            ]);
 
         } catch (\Throwable $th) {
             log_message('error', $th->getMessage());
+
             return view('pages/dashboard', [
                 'monthlyKwh' => [],
                 'labels' => [],
                 'totalKwh' => 0,
                 'avgDaily' => 0,
-                'estimatedCost' => 0
+                'selectedMonth' => date('m'),
+                'selectedYear' => date('Y')
             ]);
         }
     }
+
 
     public function remote_control()
     {
@@ -87,12 +150,11 @@ class Home extends BaseController
 
         $getDevice = $model->first();
 
-        if(!$getDevice)
-        {
+        if (!$getDevice) {
             return redirect()->back()->withInput()->with('error', 'No device Found.');
         }
 
-        
+
         return view('pages/remote-control', ['esp_id' => $getDevice['device_id']]);
     }
 

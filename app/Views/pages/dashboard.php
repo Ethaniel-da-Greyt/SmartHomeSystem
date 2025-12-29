@@ -7,6 +7,32 @@ Dashboard
 <?= $this->section('content') ?>
 <?= $this->section('navbar') ?> Dashboard <?= $this->endSection() ?>
 <div class="container-fluid">
+    <form method="get" action="<?= base_url('dashboard') ?>" class="row g-2 mb-4">
+        <div class="col-md-3">
+            <select name="month" class="form-select">
+                <?php for ($m = 1; $m <= 12; $m++): ?>
+                    <option value="<?= $m ?>" <?= ($selectedMonth == $m) ? 'selected' : '' ?>>
+                        <?= date('F', mktime(0, 0, 0, $m, 1)) ?>
+                    </option>
+                <?php endfor; ?>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="year" class="form-select">
+                <?php for ($y = date('Y'); $y >= date('Y') - 5; $y--): ?>
+                    <option value="<?= $y ?>" <?= ($selectedYear == $y) ? 'selected' : '' ?>>
+                        <?= $y ?>
+                    </option>
+                <?php endfor; ?>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
 
     <!-- ================= SUMMARY CARDS ================= -->
     <div class="row g-3 mb-4">
@@ -42,7 +68,13 @@ Dashboard
     <div class="card shadow-sm border-0">
         <div class="card-body">
 
-            <h5 class="mb-3 fw-bold">Monthly Electricity Consumption</h5>
+            <?php
+            $monthName = isset($selectedMonth)
+                ? date('F', mktime(0, 0, 0, $selectedMonth, 1))
+                : date('F');
+            ?>
+            <h5 class="mb-3 fw-bold">Monthly Electricity Consumption
+                <strong class="text-success">(<?= esc(strtoupper($monthName)) ?> <?= esc($selectedYear ?? date('Y')) ?>)</strong></h5>
             <canvas id="electricityChart" height="100"></canvas>
 
         </div>
@@ -55,7 +87,7 @@ Dashboard
 
 <script>
     // Preserve small decimals in chart
-    
+
     const monthlyKwh = <?= json_encode(array_map('floatval', $monthlyKwh ?? [])) ?>;
     // Use full date labels passed from controller (e.g., "Dec 27, 2025")
     const labels = <?= json_encode($labels ?? []) ?>;
