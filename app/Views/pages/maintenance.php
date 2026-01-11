@@ -29,7 +29,6 @@ Maintenance Monitoring
                 <table class="table table-bordered table-hover mb-0">
                     <thead class="table">
                         <tr>
-                            <th>#</th>
                             <th>Device ID</th>
                             <th>Remarks</th>
                             <th>Date Reported</th>

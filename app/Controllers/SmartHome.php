@@ -23,6 +23,10 @@ class Smarthome extends ResourceController
         $deviceId = $data['device_id'];
         $kwh = $data['kwh'];
 
+        if($kwh == "0.0000" || "0"){
+            return false;
+        }
+
         $deviceModel = new RemoteModel();
         $kwhModel = new KilowattsReaderModel();
 

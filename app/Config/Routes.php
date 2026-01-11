@@ -47,4 +47,9 @@ $routes->group('smarthome/api', function ($routes) {
 });
 
 
+//SMS testing
+// $routes->get('test-sms', 'TestSMS::index');
+$routes->post('smarthome/api/send-sms', 'SendSMS::index');
+
+
 
