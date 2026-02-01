@@ -1,0 +1,11 @@
+1. Open Ngrok and login 
+2. Download Ngrok.exe
+3. Open Ngrok terminal
+4. paste this ngrok config add-authtoken 38SSvcCYKYFdaqNaQJbFWviPdov_3vifnyzJFBgryNaauYa7F
+5. Start ngrok http 8000
+6. Change the app.baseURL = '' and paste the link from the ngrok terminal the "Forwarding" like this "https://janeth-opisthognathous-nicole.ngrok-free.dev";
+7. Open Terminal for web and run "php spark serve --host 0.0.0.0 --port 8000"
+8. Open in your phone the web system and search the https://janeth-opisthognathous-nicole.ngrok-free.dev 
+
+Instruction:
+    Connect a wifi with an Internet Connection.
