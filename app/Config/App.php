@@ -16,7 +16,22 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL = 'http://localhost:8080/';
+    public string $baseURL;
+    public function __construct()
+    {
+        // Detect protocol correctly
+        $protocol = 'http';
+        if (
+            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+            ($_SERVER['SERVER_PORT'] ?? null) == 443 ||
+            (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+        ) {
+            $protocol = 'https';
+        }
+
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8000';
+        $this->baseURL = $protocol . '://' . $host . '/';
+    }
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
@@ -180,7 +195,9 @@ class App extends BaseConfig
      *
      * @var array<string, string>
      */
-    public array $proxyIPs = [];
+    public array $proxyIPs = [
+        '0.0.0.0/0' => 'X-Forwarded-For',
+    ];
 
     /**
      * --------------------------------------------------------------------------
